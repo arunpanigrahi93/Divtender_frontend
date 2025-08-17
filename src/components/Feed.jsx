@@ -35,9 +35,7 @@ const Feed = () => {
 
   return (
     <div className="flex flex-wrap justify-center my-10 gap-6">
-      {feed.map((user, idx) => (
-        <UserCard key={idx} user={user} />
-      ))}
+      <UserCard user={feed[0]} />
     </div>
   );
 };

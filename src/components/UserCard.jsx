@@ -1,41 +1,48 @@
-import React from "react";
+import axios from "axios";
+import { BASE_URL } from "../utils/constants";
+import { useDispatch } from "react-redux";
+import { removeUserFromFeed } from "../utils/feedSlice";
 
 const UserCard = ({ user }) => {
-  const { firstName, lastName, age, gender, photoUrl, about } = user;
+  const { _id, firstName, lastName, photoUrl, age, gender, about } = user;
+  const dispatch = useDispatch();
+
+  const handleSendRequest = async (status, userId) => {
+    try {
+      const res = await axios.post(
+        BASE_URL + "/request/send/" + status + "/" + userId,
+        {},
+        { withCredentials: true }
+      );
+      dispatch(removeUserFromFeed(userId));
+    } catch (err) {}
+  };
 
   return (
-    <div className="card bg-base-300 w-80 shadow-lg rounded-xl overflow-hidden transition-transform transform hover:scale-105 hover:shadow-2xl">
-      {/* Image */}
-      <figure className="h-60 w-full overflow-hidden">
-        <img
-          src={photoUrl}
-          alt={`${firstName} ${lastName}`}
-          className="w-full h-full object-cover"
-        />
+    <div className="card bg-base-300 w-96 shadow-xl">
+      <figure>
+        <img src={user.photoUrl} alt="photo" />
       </figure>
-
-      {/* Card Body */}
-      <div className="card-body p-5">
-        {/* Name & Age */}
-        <h2 className="text-lg font-bold flex items-center justify-between">
-          {firstName} {lastName}
-          <span className="text-sm font-medium text-gray-500">{age} yrs</span>
-        </h2>
-        <p className="text-sm text-gray-600 capitalize">{gender}</p>
-
-        {/* About */}
-        <p className="mt-2 text-sm text-gray-700 leading-relaxed line-clamp-3">
-          {about}
-        </p>
-
-        {/* Actions */}
-        <div className="card-actions mt-4 justify-between">
-          <button className="btn btn-sm btn-secondary px-4">Ignore</button>
-          <button className="btn btn-sm btn-accent px-4">Interested</button>
+      <div className="card-body">
+        <h2 className="card-title">{firstName + " " + lastName}</h2>
+        {age && gender && <p>{age + ", " + gender}</p>}
+        <p>{about}</p>
+        <div className="card-actions justify-center my-4">
+          <button
+            className="btn btn-primary"
+            onClick={() => handleSendRequest("ignored", _id)}
+          >
+            Ignore
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => handleSendRequest("interested", _id)}
+          >
+            Interested
+          </button>
         </div>
       </div>
     </div>
   );
 };
-
 export default UserCard;
